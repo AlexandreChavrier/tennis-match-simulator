@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tennis Score Calculator</title>
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .score-display {
+            margin-top: 20px;
+            font-family: monospace;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Tennis Score Calculator</h1>
+
+    <div class="form-group">
+        <h3>Joueur 1</h3>
+        <label>Nom: <input type="text" id="player1Name" value=""></label><br>
+        <label>Niveau (1-10): <input type="number" id="player1Level" min="1" max="10" value="8"></label>
+    </div>
+
+    <div class="form-group">
+        <h3>Joueur 2</h3>
+        <label>Nom: <input type="text" id="player2Name" value=""></label><br>
+        <label>Niveau (1-10): <input type="number" id="player2Level" min="1" max="10" value="8"></label>
+    </div>
+
+    <button onclick="generatePoints(nbrPoints = 150)">Générer des points</button>
+    <button onclick="calculateScore()">Calculer le score</button>
+
+    <div class="score-display">
+        <h3>Points générés:</h3>
+        <div class="points-list">
+            <pre id="pointsDisplay"></pre>
+        </div>
+        <div>
+            <pre id="totalPoints"></pre>
+        </div>
+
+
+        <h3>Score:</h3>
+        <div id="scoreDisplay">
+            <table id="scoreTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Joueur</th>
+                        <th>Set 1</th>
+                        <th>Set 2</th>
+                        <th>Set 3</th>
+                        <th>Set 4</th>
+                        <th>Set 5</th>
+                        <th>Jeu en cours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="player1Row">
+                        <td id="player1Name_display"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr id="player2Row">
+                        <td id="player2Name_display"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="matchStatus" style="margin-top: 10px; font-weight: bold;"></div>
+        </div>
+    </div>
+
+    <script src="/scripts/script.js"></script>
+</body>
+</html>
