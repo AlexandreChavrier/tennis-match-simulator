@@ -4,7 +4,7 @@ let player1Info = null;
 let player2Info = null;
 let currentMatchScore = null;
 
-function validatePlayerInpputs() {
+function validatePlayerInputs() {
     // Vérification des noms
     const player1Name = document.getElementById('player1Name').value;
     const player2Name = document.getElementById('player2Name').value;
@@ -29,6 +29,7 @@ function validatePlayerInpputs() {
 }
 
 function disablePlayerInputs() {
+    // Réinitialisation des inputs
     document.getElementById('player1Name').disabled = true;
     document.getElementById('player2Name').disabled = true;
     document.getElementById('player1Level').disabled = true;
@@ -36,6 +37,7 @@ function disablePlayerInputs() {
 }
 
 function enablePlayerInputs() {
+    // Réactivation des inputs 
     document.getElementById('player1Name').disabled = false;
     document.getElementById('player2Name').disabled = false;
     document.getElementById('player1Level').disabled = false;
@@ -43,6 +45,7 @@ function enablePlayerInputs() {
 }
 
 function initializePlayers() {
+    // Initialisation des joueurs et de leurs informations
     player1Info = {
         name: document.getElementById('player1Name').value,
         level: parseInt(document.getElementById('player1Level').value),
@@ -56,8 +59,7 @@ function initializePlayers() {
 }
 
 function generatePoints() {
-
-    if (!validatePlayerInpputs()) {
+    if (!validatePlayerInputs()) {
         return;
     }
 
@@ -113,9 +115,8 @@ function getCurrentPlayerPoints(playerName) {
     return generatedPoints.filter(point => point.winner === playerName).length;
 }
 
-// Fonction mettant à jour les éléments du tableau des scores
 function updateScoreTable(score) {
-
+    // Afficher le tableau des scores lorsque updateScoreTable est appelée
     document.getElementById('score-section').style.display = 'block';
     const table = document.getElementById('scoreTable');
     table.style.display = 'table';
@@ -149,11 +150,12 @@ function updateScoreTable(score) {
     if (score.isComplete) {
         statusDiv.textContent = `Match terminé ! ${score.winner} a gagné !`;
     } else {
-        statusDiv.textContent = 'Match en cours, Générez plus de points pour continuer.';
+        const currentSetNumber = score.player1.sets.length + 1;
+        const currentGameInSetNumber = (score.player1.currentSet.games) + (score.player2.currentSet.games) + 1
+        statusDiv.textContent = `Match non terminé, jeu numéro ${currentGameInSetNumber} du set ${currentSetNumber} en cours, Générez plus de points pour continuer.`;
     }
 }
 
-// Fonction pour réinitialiser le match
 function resetMatch() {
     generatedPoints = [];
     currentMatchScore = null;
@@ -188,21 +190,21 @@ function resetMatch() {
     }
 }
 
-
-// Fonction calculant le score du match en appelant la logique implémenter côté serveur
 function calculateScore() {
-
+    // Vérifie si des points ont été générés avant de procéder au calcul du score
     if (generatedPoints.length === 0) {
         alert("Veuillez d'abord générer des points!");
         return;
     }
 
+    // Prépare les données à envoyer au serveur
     const data = {
         player1: player1Info,
         player2: player2Info,
         points: generatedPoints
     };
 
+    // Envoi une requête POST au serveur pour calculer le score
     fetch('/api/tennis/calculate-score', {
         method: 'POST',
         headers: {
@@ -210,13 +212,16 @@ function calculateScore() {
         },
         body: JSON.stringify(data)
     })
+        // Convertit la réponse en JSON
         .then(response => response.json())
+        // Traite la réponse du serveur
         .then(score => {
             currentMatchScore = score;
             updateScoreTable(score);
             console.log(data);
             console.log(score);
         })
+        // Gestion des erreurs
         .catch(error => {
             console.error('Error:', error);
             alert('Erreur lors du calcul du score');

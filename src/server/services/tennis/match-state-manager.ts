@@ -1,11 +1,12 @@
 import { MatchState } from '../../types/types';
-import { SetManager } from './set-manager';  // Ajouter cet import
+import { SetManager } from './set-manager';
 
 // Classe pour la gestion de l'état du match
 export class MatchStateManager {
-    constructor(private setManager: SetManager) {}  // Injection de SetManager
+    constructor(private setManager: SetManager) { }
 
     public createInitialMatchState(): MatchState {
+        // Initialisation d'un match avec les valeurs initiales
         return {
             player1: {
                 sets: [],
@@ -32,7 +33,6 @@ export class MatchStateManager {
     }
 
     public handleGameWin(matchState: MatchState, winner: 1 | 2): void {
-
         // Incrémententation des points des jeux des joueurs
         if (winner === 1) {
             matchState.player1.currentSet.games++;
@@ -40,9 +40,9 @@ export class MatchStateManager {
             matchState.player2.currentSet.games++;
         }
 
-        // Mis à jour du score du jeu en cours à 0 pour prochains jeux
-        matchState.player1.currentSet.points = { currentGame: "0" , points: 0 };
-        matchState.player2.currentSet.points = { currentGame: "0" , points: 0 };
+        // Mis à jour du score du jeu en cours à 0 pour les prochains jeux
+        matchState.player1.currentSet.points = { currentGame: "0", points: 0 };
+        matchState.player2.currentSet.points = { currentGame: "0", points: 0 };
 
         const setStatus = this.setManager.isSetComplete(matchState.player1.currentSet.games, matchState.player2.currentSet.games);
 
@@ -53,19 +53,18 @@ export class MatchStateManager {
     }
 
     public handleSetWin(matchState: MatchState): void {
-
         // Pousse le score des set terminé pour chacun des joueurs 
         matchState.player1.sets.push({ ...matchState.player1.currentSet });
         matchState.player2.sets.push({ ...matchState.player2.currentSet });
 
         // Mis à jour du score du set en cours à 0 pour prochains sets
-        matchState.player1.currentSet = { games: 0, points: { currentGame: "0", points: 0 }};
-        matchState.player2.currentSet = { games: 0, points: { currentGame: "0", points: 0 }};
+        matchState.player1.currentSet = { games: 0, points: { currentGame: "0", points: 0 } };
+        matchState.player2.currentSet = { games: 0, points: { currentGame: "0", points: 0 } };
     }
 
     public checkMatchComplete(matchState: MatchState, player1Name: string, player2Name: string): void {
         const setsWon = this.setManager.countSetsWon(matchState.player1.sets, matchState.player2.sets);
-        
+
         // Vérifie si le match est terminé : au moins 3 sets gagnés
         if (setsWon.p1Sets >= 3) {
             matchState.isComplete = true;

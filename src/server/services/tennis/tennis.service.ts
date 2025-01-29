@@ -19,9 +19,9 @@ export class TennisService {
             this.matchStateManager
         );
     }
+
     // Méthode publique car utilisée dans tennis.routes.ts
     public calculateMatchScore(player1: Player, player2: Player, points: Point[]): MatchState {
-
         // Initialisation d'un match à zéro
         let matchState = this.matchStateManager.createInitialMatchState();
 

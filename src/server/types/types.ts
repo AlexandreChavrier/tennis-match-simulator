@@ -39,7 +39,7 @@ export interface Point {
 }
 
 // Paramètres initiaux du match
-export interface MatchSettings{
+export interface MatchSettings {
     player1: Player;
     player2: Player;
     points: Point[];

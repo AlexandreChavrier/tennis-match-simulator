@@ -1,10 +1,10 @@
 // Classe pour la logique de calcul des scores
 export class TennisScoreCalculator {
 
-    // Convertir les points en score tennis
     public pointsToScore(points: number): string {
+        // Conversion des points en score tennis
         switch (points) {
-            case 0: return "O";
+            case 0: return "0";
             case 1: return "15";
             case 2: return "30";
             case 3: return "40";
@@ -13,7 +13,6 @@ export class TennisScoreCalculator {
     }
 
     public calculateGameScore(player1Points: number, player2Points: number): { player1Score: string, player2Score: string } {
-
         if (player1Points === player2Points && player1Points >= 3) {
             return { player1Score: "40", player2Score: "40" };
         }
@@ -51,7 +50,6 @@ export class TennisScoreCalculator {
         if (player2Points >= 7 && player2Points - player1Points >= 2) {
             return { player1Score: player1Points.toString(), player2Score: player2Points.toString(), complete: true, winner: 2 };
         }
-
         // Si pas de victoire, retourne le score du tiebreak en cours
         return { player1Score: player1Points.toString(), player2Score: player2Points.toString(), complete: false };
     }
