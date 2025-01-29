@@ -1,5 +1,5 @@
 import express from 'express';
-import { TennisService } from '../services/tennis.service';
+import { TennisService } from '../services';
 
 const router = express.Router();
 const tennisService = new TennisService();

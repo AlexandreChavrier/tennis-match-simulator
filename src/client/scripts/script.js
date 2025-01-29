@@ -1,50 +1,128 @@
-// Variable globale pour les points générés du match en cours
+// Variables globales
 let generatedPoints = [];
+let player1Info = null;
+let player2Info = null;
+let currentMatchScore = null;
 
-// Fonction pour générer les points côté client
-function generatePoints(nbrPoints) {
+function validatePlayerInpputs() {
+    // Vérification des noms
+    const player1Name = document.getElementById('player1Name').value;
+    const player2Name = document.getElementById('player2Name').value;
 
-    // Récupération des informations des joueurs
-    const player1 = {
+    // Message d'erreur si le ou les noms des joueurs ne sont pas renseignés
+    if (!player1Name || !player2Name) {
+        alert("Veuillez renseigner les noms des deux joueurs !");
+        return false;
+    }
+
+    // Vérification des niveaux
+    const player1Level = document.getElementById('player1Level').value;
+    const player2Level = document.getElementById('player2Level').value;
+
+    // Message d'erreur si le ou les niveaux des joueurs ne sont pas renseignés
+    if (!player1Level || !player2Level) {
+        alert("Veuillez renseigner les niveaux des deux joueurs !");
+        return false;
+    }
+
+    return true;
+}
+
+function disablePlayerInputs() {
+    document.getElementById('player1Name').disabled = true;
+    document.getElementById('player2Name').disabled = true;
+    document.getElementById('player1Level').disabled = true;
+    document.getElementById('player2Level').disabled = true;
+}
+
+function enablePlayerInputs() {
+    document.getElementById('player1Name').disabled = false;
+    document.getElementById('player2Name').disabled = false;
+    document.getElementById('player1Level').disabled = false;
+    document.getElementById('player2Level').disabled = false;
+}
+
+function initializePlayers() {
+    player1Info = {
         name: document.getElementById('player1Name').value,
         level: parseInt(document.getElementById('player1Level').value),
         totalPoints: 0
     };
-    const player2 = {
+    player2Info = {
         name: document.getElementById('player2Name').value,
         level: parseInt(document.getElementById('player2Level').value),
         totalPoints: 0
     };
+}
+
+function generatePoints() {
+
+    if (!validatePlayerInpputs()) {
+        return;
+    }
+
+    if (!player1Info || !player2Info) {
+        initializePlayers();
+        disablePlayerInputs();
+    }
+
+    // Si un match est en cours et complet, on empêche de générer plus de points
+    if (currentMatchScore && currentMatchScore.isComplete) {
+        alert("Le match est déjà terminé ! Veuillez commencer un nouveau match.");
+        return;
+    }
+
+    document.getElementById('points-section').style.display = 'block';
+
+    // Récupération du dernier numéro de point
+    const lastPointNumber = generatedPoints.length > 0 ? generatedPoints[generatedPoints.length - 1].pointNumber : 0;
 
     // Création des points générés avec probabilité de gagner en fonction des niveaux des joueurs
-    generatedPoints = Array(nbrPoints).fill(null).map((_, index) => {
-        const totalLevel = player1.level + player2.level;
-        const player1Probability = player1.level / totalLevel;
-        const winner = Math.random() < player1Probability ? player1.name : player2.name;
-        winner === player1.name ? player1.totalPoints++ : player2.totalPoints++;
+    const newPoints = Array(150).fill(null).map((_, index) => {
+        const totalLevel = player1Info.level + player2Info.level;
+        const player1Probability = player1Info.level / totalLevel;
+        const winner = Math.random() < player1Probability ? player1Info.name : player2Info.name;
+
+        winner === player1Info.name ? player1Info.totalPoints++ : player2Info.totalPoints++;
 
         return {
-            pointNumber: index + 1,
+            pointNumber: lastPointNumber + index + 1,
             winner: winner,
         };
     });
 
+    // Ajout des nouveaux points aux points existants
+    generatedPoints = [...generatedPoints, ...newPoints];
+
+    updatePointsDisplay();
+}
+
+function updatePointsDisplay() {
     // Affichage des points générés côté client
     document.getElementById('pointsDisplay').textContent =
         generatedPoints.map(p => `Point ${p.pointNumber}: ${p.winner}`).join('\n');
 
+    document.getElementById('totalPlayerPoints').textContent =
+        `Points remportés par ${player1Info.name}: ${player1Info.totalPoints}\nPoints remportés par ${player2Info.name}: ${player2Info.totalPoints}`;
+
     document.getElementById('totalPoints').textContent =
-        `Points remportés par ${player1.name}: ${player1.totalPoints}\nPoints remportés par ${player2.name}: ${player2.totalPoints}`;
+        `Nombre total de points générés : ${player1Info.totalPoints + player2Info.totalPoints}`;
+}
+
+function getCurrentPlayerPoints(playerName) {
+    return generatedPoints.filter(point => point.winner === playerName).length;
 }
 
 // Fonction mettant à jour les éléments du tableau des scores
 function updateScoreTable(score) {
+
+    document.getElementById('score-section').style.display = 'block';
     const table = document.getElementById('scoreTable');
     table.style.display = 'table';
 
     // Mise à jour des noms en fonction des inputs
-    document.getElementById('player1Name_display').textContent = document.getElementById('player1Name').value;
-    document.getElementById('player2Name_display').textContent = document.getElementById('player2Name').value;
+    document.getElementById('player1Name_display').textContent = player1Info.name;
+    document.getElementById('player2Name_display').textContent = player2Info.name;
 
     const player1Row = document.getElementById('player1Row').children;
     const player2Row = document.getElementById('player2Row').children;
@@ -53,6 +131,13 @@ function updateScoreTable(score) {
     for (let i = 0; i < Math.max(score.player1.sets.length, score.player2.sets.length); i++) {
         player1Row[i + 1].textContent = score.player1.sets[i]?.games || 0;
         player2Row[i + 1].textContent = score.player2.sets[i]?.games || 0;
+    }
+
+    // Mise à jour du set en cours
+    const currentSetIndex = score.player1.sets.length + 1;
+    if (!score.isComplete) {
+        player1Row[currentSetIndex].textContent = score.player1.currentSet.games;
+        player2Row[currentSetIndex].textContent = score.player2.currentSet.games;
     }
 
     // Mise à jour du jeu en cours
@@ -64,27 +149,57 @@ function updateScoreTable(score) {
     if (score.isComplete) {
         statusDiv.textContent = `Match terminé ! ${score.winner} a gagné !`;
     } else {
-        statusDiv.textContent = 'Match en cours';
+        statusDiv.textContent = 'Match en cours, Générez plus de points pour continuer.';
+    }
+}
+
+// Fonction pour réinitialiser le match
+function resetMatch() {
+    generatedPoints = [];
+    currentMatchScore = null;
+    player1Info = null;
+    player2Info = null;
+
+    // Réactivation des inputs
+    enablePlayerInputs();
+
+    // Cacher les sections
+    document.getElementById('points-section').style.display = 'none';
+    document.getElementById('score-section').style.display = 'none';
+
+    // Réinitialissation des contenus
+    document.getElementById('pointsDisplay').textContent = '';
+    document.getElementById('totalPoints').textContent = '';
+    document.getElementById('matchStatus').textContent = 'Nouveau match';
+
+    // Réinitialisation des inputs
+    document.getElementById('player1Name').value = null;
+    document.getElementById('player2Name').value = null;
+    document.getElementById('player1Level').value = null;
+    document.getElementById('player2Level').value = null;
+
+
+    // Réinitialisation du tableau des scores
+    const player1Row = document.getElementById('player1Row').children;
+    const player2Row = document.getElementById('player2Row').children;
+    for (let i = 1; i < player1Row.length; i++) {
+        player1Row[i].textContent = '0';
+        player2Row[i].textContent = '0';
     }
 }
 
 
 // Fonction calculant le score du match en appelant la logique implémenter côté serveur
 function calculateScore() {
+
     if (generatedPoints.length === 0) {
         alert("Veuillez d'abord générer des points!");
         return;
     }
 
     const data = {
-        player1: {
-            name: document.getElementById('player1Name').value,
-            level: parseInt(document.getElementById('player1Level').value)
-        },
-        player2: {
-            name: document.getElementById('player2Name').value,
-            level: parseInt(document.getElementById('player2Level').value)
-        },
+        player1: player1Info,
+        player2: player2Info,
         points: generatedPoints
     };
 
@@ -97,6 +212,7 @@ function calculateScore() {
     })
         .then(response => response.json())
         .then(score => {
+            currentMatchScore = score;
             updateScoreTable(score);
             console.log(data);
             console.log(score);

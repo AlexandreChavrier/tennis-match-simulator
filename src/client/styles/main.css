@@ -1,0 +1,23 @@
+body {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.score-display {
+    margin-top: 20px;
+    font-family: monospace;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td,
+th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
