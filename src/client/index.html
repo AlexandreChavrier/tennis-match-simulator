@@ -8,19 +8,27 @@
 
 <body>
 
-    <div style="display: flex; flex-direction: row; gap: 100px">
+    <div class="big-container">
         <div class="wrap">
             <h1>Tennis Score Calculator</h1>
             <div class="form-group">
                 <h3>Joueur 1</h3>
-                <label>Nom: <input type="text" id="player1Name" value=""></label><br>
-                <label>Niveau (1-10): <input type="number" id="player1Level" min="1" max="10"></label>
+                <div class="input-group">
+                    <label>Nom: <input type="text" id="player1Name" value=""></label><br>
+                </div>
+                <div class="input-group">
+                    <label>Niveau (1-10): <input type="number" id="player1Level" min="1" max="10"></label>
+                </div>
             </div>
 
             <div class="form-group">
                 <h3>Joueur 2</h3>
-                <label>Nom: <input type="text" id="player2Name" value=""></label><br>
-                <label>Niveau (1-10): <input type="number" id="player2Level" min="1" max="10"></label>
+                <div class="input-group">
+                    <label>Nom: <input type="text" id="player2Name" value=""></label><br>
+                </div>
+                <div class="input-group">
+                    <label>Niveau (1-10): <input type="number" id="player2Level" min="1" max="10"></label>
+                </div>
             </div>
 
             <button onclick="generatePoints()">Générer des points</button>

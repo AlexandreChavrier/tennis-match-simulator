@@ -3,7 +3,17 @@ body {
     font-family: Arial, sans-serif;
 }
 
+.big-container {
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+}
+
 .form-group {
+    margin-bottom: 15px;
+}
+
+.input-group {
     margin-bottom: 15px;
 }
 
